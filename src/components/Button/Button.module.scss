@@ -1,0 +1,18 @@
+%primaryButton {
+  @apply py-2 px-3
+    font-medium text-white
+    bg-indigo-500 rounded-sm shadow-sm
+    transition-all duration-150
+    hover:shadow-md hover:bg-indigo-600
+    focus:outline-none;
+}
+
+.primaryActionButton {
+  @extend %primaryButton;
+}
+
+.primaryLinkButton {
+  @extend %primaryButton;
+
+  @apply cursor-pointer;
+}
