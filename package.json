@@ -9,6 +9,7 @@
     "gen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
+    "@tailwindcss/forms": "^0.3.2",
     "@urql/exchange-graphcache": "^4.0.0",
     "graphql": "^15.5.0",
     "next": "10.0.9",
@@ -24,9 +25,9 @@
     "@tailwindcss/jit": "^0.1.3",
     "@types/node": "^14.14.35",
     "@types/react": "^17.0.3",
-    "autoprefixer": "^10.2.5",
-    "postcss": "^8.2.8",
-    "tailwindcss": "^2.0.4",
+    "autoprefixer": "^10.0.4",
+    "postcss": "^8.1.10",
+    "tailwindcss": "^2.0.2",
     "typescript": "^4.2.3"
   }
 }
