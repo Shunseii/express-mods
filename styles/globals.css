@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  @apply h-screen;
+  @apply bg-coolGray-50;
+}
