@@ -1,0 +1,5 @@
+fragment UserIDInfo on User {
+  id
+  email
+  username
+}
