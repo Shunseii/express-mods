@@ -1,11 +1,20 @@
+const colors = require("tailwindcss/colors");
+
 module.exports = {
-  purge: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
+  purge: [
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+  ],
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    fontFamily: {
+      display: ["Oswald"],
+    },
+    extend: {
+      colors: {
+        coolGray: colors.coolGray,
+      },
+    },
   },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
+  plugins: [require("@tailwindcss/forms")],
 };
