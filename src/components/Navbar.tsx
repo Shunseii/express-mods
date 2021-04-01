@@ -1,19 +1,23 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { AiFillHome } from "react-icons/ai";
 import { FaGamepad } from "react-icons/fa";
 import { FaUserCircle } from "react-icons/fa";
 
 import NavbarLink from "./NavbarLink";
 import { PrimaryLinkButton } from "./LinkButton";
-import { useMeQuery } from "../generated/graphql";
+import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 import { PrimaryActionButton } from "./ActionButton";
+import isServer from "../utils/isServer";
 
 interface NavbarProps {}
 
 const Navbar: React.FC<NavbarProps> = ({}) => {
-  const [{ data, fetching }] = useMeQuery();
+  const [{ data, fetching: isFetchingMe }] = useMeQuery({ pause: isServer() });
+  const [{ fetching: isLoggingOut }, logout] = useLogoutMutation();
+  const router = useRouter();
 
   return (
     <nav className="flex flex-row items-center justify-between px-6 py-8 mx-96">
@@ -52,9 +56,12 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
             </span>
             <PrimaryActionButton
               className="w-20 leading-none"
+              spinnerClassName="w-3.5 h-3.5"
               label="Logout"
+              isLoading={isLoggingOut}
               onClick={async () => {
-                console.log("logout");
+                logout();
+                router.push("/login");
               }}
             />
           </>

@@ -5,6 +5,7 @@ import Button, { ButtonType } from "./Button/Button";
 interface ActionButtonProps {
   label: string;
   className?: string;
+  spinnerClassName?: string;
   type?: ButtonType;
   isLoading?: boolean;
   onClick?: () => void;
@@ -13,6 +14,7 @@ interface ActionButtonProps {
 export const PrimaryActionButton: React.FC<ActionButtonProps> = ({
   label,
   className,
+  spinnerClassName,
   type = "button",
   isLoading = false,
   onClick,
@@ -23,7 +25,7 @@ export const PrimaryActionButton: React.FC<ActionButtonProps> = ({
       className={className}
       theme="primary"
       variant="action"
-      ActionButtonProps={{ type, isLoading, onClick }}
+      ActionButtonProps={{ type, isLoading, spinnerClassName, onClick }}
     />
   );
 };
@@ -31,6 +33,7 @@ export const PrimaryActionButton: React.FC<ActionButtonProps> = ({
 export const SecondaryActionButton: React.FC<ActionButtonProps> = ({
   label,
   className,
+  spinnerClassName,
   type = "button",
   isLoading = false,
   onClick,
@@ -41,7 +44,7 @@ export const SecondaryActionButton: React.FC<ActionButtonProps> = ({
       className={className}
       theme="secondary"
       variant="action"
-      ActionButtonProps={{ type, isLoading, onClick }}
+      ActionButtonProps={{ type, isLoading, spinnerClassName, onClick }}
     />
   );
 };
