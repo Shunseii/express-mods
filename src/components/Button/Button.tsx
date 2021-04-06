@@ -16,7 +16,7 @@ interface LinkButtonProps {
 interface ActionButtonProps {
   type?: ButtonType;
   isLoading?: boolean;
-  spinnerClassName?: string;
+  LoadingIcon?: React.FC;
   onClick?: () => void;
 }
 
@@ -46,9 +46,15 @@ const Button: React.FC<ButtonProps> = ({
     const {
       type = "button",
       isLoading = false,
-      spinnerClassName,
+      LoadingIcon,
       onClick,
     } = ActionButtonProps;
+
+    let LoadingSpinnerIcon: React.FC = () => (
+      <LoadingSpinner className="w-5 h-5" />
+    );
+
+    if (LoadingIcon) LoadingSpinnerIcon = LoadingIcon;
 
     return (
       <button
@@ -57,7 +63,7 @@ const Button: React.FC<ButtonProps> = ({
         disabled={isLoading}
         className={`${themeClassName} ${className}`}
       >
-        {isLoading ? <LoadingSpinner className={spinnerClassName} /> : label}
+        {isLoading ? <LoadingSpinnerIcon /> : label}
       </button>
     );
   } else {

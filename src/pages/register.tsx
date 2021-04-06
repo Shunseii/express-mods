@@ -1,21 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { Formik, Form } from "formik";
 import { withUrqlClient } from "next-urql";
 
-import LabeledFormField from "../src/components/LabeledFormField";
-import { PrimaryActionButton } from "../src/components/ActionButton";
-import { useRegisterMutation } from "../src/generated/graphql";
-import { mapValidationErrors } from "../src/utils/mapAPIError";
-import sleep from "../src/utils/sleep";
-import { createUrqlClient } from "../src/utils/createUrqlClient";
-import Navbar from "../src/components/Navbar";
+import LabeledFormField from "../components/LabeledFormField";
+import { PrimaryActionButton } from "../components/ActionButton";
+import { useRegisterMutation } from "../generated/graphql";
+import { mapValidationErrors } from "../utils/mapAPIError";
+import sleep from "../utils/sleep";
+import { createUrqlClient } from "../utils/createUrqlClient";
+import Navbar from "../components/Navbar";
+import ErrorMessage from "../components/ErrorMessage";
 
 interface RegisterProps {}
 
-const Register: React.FC<RegisterProps> = ({}) => {
+const Register: NextPage<RegisterProps> = ({}) => {
   const router = useRouter();
+  const [formError, setFormError] = useState("");
   const [, register] = useRegisterMutation();
 
   return (
@@ -26,15 +29,21 @@ const Register: React.FC<RegisterProps> = ({}) => {
           <h1 className="self-center mb-8 text-2xl font-bold">
             Create an account
           </h1>
-          <div className="mb-6">
+          <div className="mb-4">
             <Formik
               initialValues={{ username: "", email: "", password: "" }}
               onSubmit={async (values, { setErrors }) => {
-                await sleep(1000);
+                setFormError("");
+                await sleep(500);
+
                 const response = await register(values);
 
                 if (response.error) {
                   setErrors(mapValidationErrors(response.error.graphQLErrors));
+                } else if (!response.data.register) {
+                  const errorMsg = "An error occured. Please try again.";
+
+                  setFormError(errorMsg);
                 } else {
                   router.push("/");
                 }
@@ -42,26 +51,32 @@ const Register: React.FC<RegisterProps> = ({}) => {
             >
               {({ isSubmitting }) => (
                 <Form className="flex flex-col">
-                  <div className="mb-6">
-                    <LabeledFormField name="username" label="Username" />
-                  </div>
-                  <div className="mb-6">
-                    <LabeledFormField name="email" type="email" label="Email" />
-                  </div>
-                  <div className="mb-6">
-                    <LabeledFormField
-                      name="password"
-                      type="password"
-                      label="Password"
-                    />
-                  </div>
+                  <LabeledFormField
+                    className="mb-6"
+                    name="username"
+                    label="Username"
+                  />
+                  <LabeledFormField
+                    className="mb-6"
+                    name="email"
+                    type="email"
+                    label="Email"
+                  />
+                  <LabeledFormField
+                    className="mb-6"
+                    name="password"
+                    type="password"
+                    label="Password"
+                  />
                   <PrimaryActionButton
                     className="text-lg h-11"
-                    spinnerClassName="w-5 h-5"
                     isLoading={isSubmitting}
                     type="submit"
                     label="Register"
                   />
+                  {formError && (
+                    <ErrorMessage className="mt-2">{formError}</ErrorMessage>
+                  )}
                 </Form>
               )}
             </Formik>

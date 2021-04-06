@@ -1,8 +1,8 @@
 import { withUrqlClient } from "next-urql";
 import Head from "next/head";
 
-import { createUrqlClient } from "../src/utils/createUrqlClient";
-import Navbar from "../src/components/Navbar";
+import { createUrqlClient } from "../utils/createUrqlClient";
+import Navbar from "../components/Navbar";
 
 const Home = () => {
   return (

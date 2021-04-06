@@ -3,6 +3,7 @@ import { SSRExchange } from "next-urql";
 import { dedupExchange, fetchExchange } from "urql";
 
 import {
+  ChangePasswordMutation,
   LoginMutation,
   LogoutMutation,
   MeDocument,
@@ -43,6 +44,24 @@ export const createUrqlClient = (ssrExchange: SSRExchange) => ({
               { query: MeDocument },
               _result,
               () => ({ me: null })
+            );
+          },
+          changePassword: (_result, args, cache, info) => {
+            betterUpdateQuery<ChangePasswordMutation, MeQuery>(
+              cache,
+              { query: MeDocument },
+              _result,
+              (result, query) => {
+                if (!result.changePassword) {
+                  return query;
+                } else {
+                  const { id, email, username } = result.changePassword;
+
+                  return {
+                    me: { id, email, username },
+                  };
+                }
+              }
             );
           },
           register: (_result, args, cache, info) => {

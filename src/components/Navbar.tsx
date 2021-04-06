@@ -11,6 +11,7 @@ import { PrimaryLinkButton } from "./LinkButton";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 import { PrimaryActionButton } from "./ActionButton";
 import isServer from "../utils/isServer";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface NavbarProps {}
 
@@ -56,7 +57,7 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
             </span>
             <PrimaryActionButton
               className="w-20 leading-none"
-              spinnerClassName="w-3.5 h-3.5"
+              LoadingIcon={() => <LoadingSpinner className="w-3.5 h-3.5" />}
               label="Logout"
               isLoading={isLoggingOut}
               onClick={async () => {
