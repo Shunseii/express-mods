@@ -1,0 +1,7 @@
+fragment ModIDInfo on Mod {
+  id
+  title
+  authorId
+  gameId
+  isOwner
+}

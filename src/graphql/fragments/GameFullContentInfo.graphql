@@ -1,0 +1,8 @@
+fragment GameFullContentInfo on Game {
+  id
+  name
+  description
+  gameSlug
+  imageName
+  modsCount
+}

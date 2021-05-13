@@ -1,0 +1,5 @@
+fragment ModPreviewContentInfo on Mod {
+  contentSnippet
+  likesCount
+  hasLiked
+}

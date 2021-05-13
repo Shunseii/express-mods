@@ -1,0 +1,7 @@
+mutation CreateMod($title: String!, $content: String!, $gameSlug: String!) {
+  createMod(
+    options: { title: $title, content: $content, gameSlug: $gameSlug }
+  ) {
+    ...ModIDInfo
+  }
+}

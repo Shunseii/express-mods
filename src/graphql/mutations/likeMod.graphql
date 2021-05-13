@@ -1,0 +1,3 @@
+mutation LikeMod($modId: Int!) {
+  likeMod(modId: $modId)
+}

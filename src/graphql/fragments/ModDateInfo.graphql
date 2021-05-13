@@ -1,0 +1,4 @@
+fragment ModDateInfo on Mod {
+  createdAt
+  updatedAt
+}

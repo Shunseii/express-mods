@@ -1,0 +1,13 @@
+query Mods($limit: Int!, $cursor: String, $gameSlug: String) {
+  mods(limit: $limit, cursor: $cursor, gameSlug: $gameSlug) {
+    hasMore
+    mods {
+      ...ModIDInfo
+      ...ModPreviewContentInfo
+      ...ModDateInfo
+      author {
+        ...UserIDInfo
+      }
+    }
+  }
+}
