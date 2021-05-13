@@ -2,6 +2,7 @@ import { GraphQLError } from "graphql";
 
 export enum ErrorMessage {
   VALIDATION_ERROR = "Argument Validation Error",
+  AUTHORIZATION_ERROR = "Access denied!",
 }
 
 interface ValidationError {
@@ -25,29 +26,54 @@ type GraphQLErrorExtension =
     }
   | undefined;
 
-export const mapValidationErrors = (
-  errors: GraphQLError[]
-): { [key: string]: string } => {
+const isValidationError = (error: GraphQLError): boolean => {
+  return error.message.includes(ErrorMessage.VALIDATION_ERROR);
+};
+
+const isAuthorizationError = (error: GraphQLError): boolean => {
+  return error.message.includes(ErrorMessage.AUTHORIZATION_ERROR);
+};
+
+interface ErrorMap {
+  validation: {
+    [key: string]: string;
+  };
+  errors: string[];
+}
+
+const mapValidationErrors = (error: GraphQLError): ErrorMap["validation"] => {
+  const {
+    validationErrors,
+  } = (error.extensions as GraphQLErrorExtension).exception;
+  let validationFields = {};
+
+  validationErrors.forEach((err) => {
+    const { property, constraints } = err;
+
+    for (let key in constraints) {
+      validationFields[property] = constraints[key];
+      break;
+    }
+  });
+
+  return validationFields;
+};
+
+export const mapAPIErrors = (errors: GraphQLError[] = []): ErrorMap => {
+  let errorsMap: ErrorMap = {
+    validation: {},
+    errors: [],
+  };
+
   for (let i = 0; i < errors.length; ++i) {
     const error = errors[i];
 
-    if (error.message.includes(ErrorMessage.VALIDATION_ERROR)) {
-      const {
-        validationErrors,
-      } = (error.extensions as GraphQLErrorExtension).exception;
-
-      const fields: { [key: string]: string } = {};
-
-      validationErrors.forEach((err) => {
-        const { property, constraints } = err;
-
-        for (let key in constraints) {
-          fields[property] = constraints[key];
-          break;
-        }
-      });
-
-      return fields;
+    if (isValidationError(error)) {
+      errorsMap.validation = mapValidationErrors(error);
+    } else if (isAuthorizationError(error)) {
+      errorsMap.errors.push(error.message);
     }
+
+    return errorsMap;
   }
 };
