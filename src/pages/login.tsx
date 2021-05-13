@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { Formik, Form } from "formik";
 import { withUrqlClient } from "next-urql";
 
 import LabeledFormField from "../components/LabeledFormField";
 import { PrimaryActionButton } from "../components/ActionButton";
 import { useLoginMutation } from "../generated/graphql";
-import { mapValidationErrors } from "../utils/mapAPIError";
+import { mapAPIErrors } from "../utils/mapAPIError";
 import sleep from "../utils/sleep";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import Navbar from "../components/Navbar";
@@ -21,9 +22,14 @@ const Login: NextPage<LoginProps> = ({}) => {
 
   return (
     <>
+      <Head>
+        <title>Login | Express Mods</title>
+        <link rel="icon" href="/files-circle.svg" />
+      </Head>
+
       <Navbar />
       <main className="flex h-full">
-        <div className="flex flex-col p-8 m-auto bg-white rounded-md shadow-md w-96">
+        <div className="flex flex-col p-8 m-auto bg-white border rounded-md shadow-md w-96">
           <h1 className="self-center mb-8 text-2xl font-bold">Login</h1>
           <div className="mb-4">
             <Formik
@@ -32,15 +38,20 @@ const Login: NextPage<LoginProps> = ({}) => {
                 await sleep(500);
 
                 const response = await login(values);
+                const errors = mapAPIErrors(response.error?.graphQLErrors);
 
-                if (response.error) {
-                  setErrors(mapValidationErrors(response.error.graphQLErrors));
+                if (errors) {
+                  setErrors(errors.validation);
                 } else if (!response.data.login) {
                   const errorMsg = "Your username or password is incorrect.";
 
                   setErrors({ username: errorMsg, password: errorMsg });
                 } else {
-                  router.push("/");
+                  if (typeof router.query.next === "string") {
+                    router.push(router.query.next);
+                  } else {
+                    router.push("/");
+                  }
                 }
               }}
             >

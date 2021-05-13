@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Link from "next/link";
+import Head from "next/head";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { Formik, Form } from "formik";
@@ -8,11 +8,12 @@ import { withUrqlClient } from "next-urql";
 import LabeledFormField from "../components/LabeledFormField";
 import { PrimaryActionButton } from "../components/ActionButton";
 import { useRegisterMutation } from "../generated/graphql";
-import { mapValidationErrors } from "../utils/mapAPIError";
+import { mapAPIErrors } from "../utils/mapAPIError";
 import sleep from "../utils/sleep";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import Navbar from "../components/Navbar";
 import ErrorMessage from "../components/ErrorMessage";
+import Link from "../components/Link";
 
 interface RegisterProps {}
 
@@ -23,9 +24,14 @@ const Register: NextPage<RegisterProps> = ({}) => {
 
   return (
     <>
+      <Head>
+        <title>Register | Express Mods</title>
+        <link rel="icon" href="/files-circle.svg" />
+      </Head>
+
       <Navbar />
       <main className="flex h-full">
-        <div className="flex flex-col p-8 m-auto bg-white rounded-md shadow-md w-96">
+        <div className="flex flex-col p-8 m-auto bg-white border rounded-md shadow-md w-96">
           <h1 className="self-center mb-8 text-2xl font-bold">
             Create an account
           </h1>
@@ -37,9 +43,10 @@ const Register: NextPage<RegisterProps> = ({}) => {
                 await sleep(500);
 
                 const response = await register(values);
+                const errors = mapAPIErrors(response.error?.graphQLErrors);
 
-                if (response.error) {
-                  setErrors(mapValidationErrors(response.error.graphQLErrors));
+                if (errors) {
+                  setErrors(errors.validation);
                 } else if (!response.data.register) {
                   const errorMsg = "An error occured. Please try again.";
 
@@ -83,9 +90,9 @@ const Register: NextPage<RegisterProps> = ({}) => {
           </div>
           <p className="self-center text-sm font-extralight">
             Already have an account?
-            <span className="ml-1 font-medium">
-              <Link href="/login">Login</Link>
-            </span>
+            <Link className="ml-1 text-sm font-medium" href="/login">
+              Login
+            </Link>
           </p>
         </div>
       </main>

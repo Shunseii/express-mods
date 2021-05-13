@@ -1,5 +1,6 @@
 import { Formik, Form } from "formik";
-import { GetServerSideProps, NextPage } from "next";
+import Head from "next/head";
+import { NextPage } from "next";
 import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -9,24 +10,25 @@ import LabeledFormField from "../../components/LabeledFormField";
 import Navbar from "../../components/Navbar";
 import { useChangePasswordMutation } from "../../generated/graphql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
-import { mapValidationErrors } from "../../utils/mapAPIError";
+import { mapAPIErrors } from "../../utils/mapAPIError";
 import sleep from "../../utils/sleep";
 import ErrorMessage from "../../components/ErrorMessage";
 
-interface ChangePasswordPageProps {
-  token?: string;
-}
-
-const ChangePassword: NextPage<ChangePasswordPageProps> = ({ token }) => {
+const ChangePassword: NextPage = () => {
   const router = useRouter();
   const [formError, setFormError] = useState(null);
   const [, changePassword] = useChangePasswordMutation();
 
   return (
     <>
+      <Head>
+        <title>Reset Password | Express Mods</title>
+        <link rel="icon" href="/files-circle.svg" />
+      </Head>
+
       <Navbar />
       <main className="flex h-full">
-        <div className="flex flex-col p-8 m-auto bg-white rounded-md shadow-md w-96">
+        <div className="flex flex-col p-8 m-auto bg-white border rounded-md shadow-md w-96">
           <h1 className="self-center mb-8 text-2xl font-bold">
             Change your password
           </h1>
@@ -38,12 +40,16 @@ const ChangePassword: NextPage<ChangePasswordPageProps> = ({ token }) => {
                 await sleep(500);
 
                 const response = await changePassword({
-                  token,
+                  token:
+                    typeof router.query.next === "string"
+                      ? router.query.next
+                      : "",
                   newPassword: newPassword,
                 });
+                const errors = mapAPIErrors(response.error?.graphQLErrors);
 
-                if (response.error) {
-                  setErrors(mapValidationErrors(response.error.graphQLErrors));
+                if (errors) {
+                  setErrors(errors.validation);
                 } else if (!response.data.changePassword) {
                   setFormError(`Your token is invalid or it has expired.`);
                 } else {
@@ -76,13 +82,6 @@ const ChangePassword: NextPage<ChangePasswordPageProps> = ({ token }) => {
       </main>
     </>
   );
-};
-
-export const getServerSideProps: GetServerSideProps<
-  ChangePasswordPageProps,
-  { token: string }
-> = async ({ params }) => {
-  return { props: { token: params.token } };
 };
 
 export default withUrqlClient(createUrqlClient)(ChangePassword);
