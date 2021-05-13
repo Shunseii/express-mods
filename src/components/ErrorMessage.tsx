@@ -2,7 +2,6 @@ import React from "react";
 import { RiErrorWarningFill as ErrorIcon } from "react-icons/ri";
 
 interface ErrorMessageProps {
-  children: React.ReactNode;
   className?: string;
 }
 
