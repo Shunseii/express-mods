@@ -2,10 +2,12 @@ import React from "react";
 import { Field, useField, ErrorMessage as FormikError } from "formik";
 import ErrorMessage from "./ErrorMessage";
 
+type InputType = "text" | "password" | "email" | "number" | "textarea";
+
 interface LabeledFormFieldProps {
   name: string;
   label: string;
-  type?: string;
+  type?: InputType;
   HelpLink?: React.FC;
   className?: string;
   placeholder?: string;
@@ -13,7 +15,7 @@ interface LabeledFormFieldProps {
 
 const LabeledFormField: React.FC<LabeledFormFieldProps> = (props) => {
   const [field, { error }] = useField(props);
-  const { type, label, placeholder, className, HelpLink } = props;
+  const { type = "text", label, placeholder, className, HelpLink } = props;
 
   return (
     <div className={className}>
@@ -27,12 +29,16 @@ const LabeledFormField: React.FC<LabeledFormFieldProps> = (props) => {
           )}
         </div>
         <Field
-          type={type ?? "text"}
+          type={type}
           id={field.name}
           name={field.name}
+          as={type === "textarea" ? "textarea" : "input"}
           placeholder={placeholder ?? label}
+          rows={5}
           {...field}
-          className={`block w-full mt-1 rounded-md shadow-sm transition-colors focus:placeholder-transparent ${
+          className={`block w-full mt-1 rounded-md shadow-sm transition-colors ${
+            type !== "textarea" && "focus:placeholder-transparent"
+          } ${
             error
               ? "border-red-600 placeholder-red-500 placeholder-opacity-70"
               : "border-gray-300"
