@@ -3,17 +3,18 @@ import Head from "next/head";
 
 import { createUrqlClient } from "../utils/createUrqlClient";
 import Navbar from "../components/Navbar";
+import Container from "../components/Container";
 
 const Home = () => {
   return (
     <div>
       <Head>
         <title>Express Mods</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/files-circle.svg" />
       </Head>
 
       <Navbar />
-      <main className="text-xl">Hello world!</main>
+      <Container>Hello</Container>
     </div>
   );
 };
