@@ -9,7 +9,7 @@ import { FaUserCircle } from "react-icons/fa";
 import NavbarLink from "./NavbarLink";
 import { PrimaryLinkButton } from "./LinkButton";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
-import { PrimaryActionButton } from "./ActionButton";
+import { SecondaryActionButton } from "./ActionButton";
 import isServer from "../utils/isServer";
 import LoadingSpinner from "./LoadingSpinner";
 
@@ -21,7 +21,7 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
   const router = useRouter();
 
   return (
-    <nav className="flex flex-row items-center justify-between px-6 py-8 mx-96">
+    <nav className="flex flex-row items-center justify-between py-8 mx-96">
       <div className="flex flex-row items-center">
         <Link href="/">
           <div className="flex flex-row items-center pr-6 border-r border-gray-400 cursor-pointer">
@@ -38,7 +38,7 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
         {!data?.me && (
           <>
             <PrimaryLinkButton
-              href="/login"
+              href={`/login?next=${router.asPath}`}
               label="Login"
               className="mr-4 leading-none"
             />
@@ -55,14 +55,14 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
               <FaUserCircle className="mr-2" />
               {data.me.username}
             </span>
-            <PrimaryActionButton
+            <SecondaryActionButton
               className="w-20 leading-none"
               LoadingIcon={() => <LoadingSpinner className="w-3.5 h-3.5" />}
               label="Logout"
               isLoading={isLoggingOut}
               onClick={async () => {
                 logout();
-                router.push("/login");
+                // router.push("/login");
               }}
             />
           </>
