@@ -1,7 +1,16 @@
+%secondaryButton {
+  @apply py-2 px-3
+    font-medium text-coolGray-500
+    bg-coolGray-50 rounded-sm border
+    transition-all duration-150
+    hover:shadow-sm hover:bg-coolGray-100
+    focus:outline-none;
+}
+
 %primaryButton {
   @apply py-2 px-3
     font-medium text-white
-    bg-indigo-500 rounded-sm shadow-sm
+    bg-indigo-500 rounded-sm shadow-sm border
     transition-all duration-150
     hover:shadow-md hover:bg-indigo-600
     focus:outline-none;
@@ -13,6 +22,16 @@
 
 .primaryLinkButton {
   @extend %primaryButton;
+
+  @apply cursor-pointer;
+}
+
+.secondaryActionButton {
+  @extend %secondaryButton;
+}
+
+.secondaryLinkButton {
+  @extend %secondaryButton;
 
   @apply cursor-pointer;
 }
