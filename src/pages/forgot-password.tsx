@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { NextPage } from "next";
+import Head from "next/head";
 import { withUrqlClient } from "next-urql";
 import { Formik, Form } from "formik";
 
@@ -7,7 +8,7 @@ import Navbar from "../components/Navbar";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { PrimaryActionButton } from "../components/ActionButton";
 import LabeledFormField from "../components/LabeledFormField";
-import { mapValidationErrors } from "../utils/mapAPIError";
+import { mapAPIErrors } from "../utils/mapAPIError";
 import sleep from "../utils/sleep";
 import { useForgotPasswordMutation } from "../generated/graphql";
 
@@ -19,9 +20,14 @@ const ForgotPassword: NextPage<ForgotPasswordProps> = () => {
 
   return (
     <>
+      <Head>
+        <title>Forgot Password | Express Mods</title>
+        <link rel="icon" href="/files-circle.svg" />
+      </Head>
+
       <Navbar />
       <main className="flex h-full">
-        <div className="flex flex-col p-8 m-auto bg-white rounded-md shadow-md w-96">
+        <div className="flex flex-col p-8 m-auto bg-white border rounded-md shadow-md w-96">
           <h1 className="self-center mb-8 text-2xl font-bold">
             Reset your password
           </h1>
@@ -40,11 +46,10 @@ const ForgotPassword: NextPage<ForgotPasswordProps> = () => {
                   const response = await forgotPassword({
                     email: values.email,
                   });
+                  const errors = mapAPIErrors(response.error?.graphQLErrors);
 
-                  if (response.error) {
-                    setErrors(
-                      mapValidationErrors(response.error.graphQLErrors)
-                    );
+                  if (errors) {
+                    setErrors(errors.validation);
                   } else {
                     setCompleted(true);
                   }
