@@ -51,7 +51,7 @@ const Button: React.FC<ButtonProps> = ({
     } = ActionButtonProps;
 
     let LoadingSpinnerIcon: React.FC = () => (
-      <LoadingSpinner className="w-5 h-5" />
+      <LoadingSpinner theme={theme} className={`w-5 h-5`} />
     );
 
     if (LoadingIcon) LoadingSpinnerIcon = LoadingIcon;
