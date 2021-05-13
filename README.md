@@ -7,3 +7,12 @@ This is a full-stack web application with the back end being located in a separa
 
 ## Features
 The project allows users to register and login, post mods for different games, view a list of all mods with cursor-based pagination implemented, like and dislike mods, and reset password via an end-to-end password change flow.
+
+## In-Progress
+The core functionality that is still in development: 
+- Individual mod display page
+- Commenting on mod pages
+- Uploading files, cloud storage integration
+- Sorting and filtering options
+- Categories/tags
+- Cloud database integration and hosting
