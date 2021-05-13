@@ -2,12 +2,18 @@ import React from "react";
 
 interface LoadingSpinnerProps {
   className?: string;
+  theme?: "primary" | "secondary";
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ className }) => {
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+  className,
+  theme = "primary",
+}) => {
   return (
     <svg
-      className={`inline m-auto text-white animate-spin leading-none ${className}`}
+      className={`inline m-auto ${
+        theme === "primary" ? "text-white" : "text-black"
+      } animate-spin leading-none ${className}`}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
