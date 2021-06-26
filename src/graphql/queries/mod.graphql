@@ -1,0 +1,10 @@
+query Mod($modId: Int!) {
+  mod(id: $modId) {
+    ...ModIDInfo
+    ...ModPreviewContentInfo
+    ...ModDateInfo
+    author {
+      ...UserIDInfo
+    }
+  }
+}

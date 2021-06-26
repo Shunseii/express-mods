@@ -1,6 +1,7 @@
 import { withUrqlClient } from "next-urql";
 import Head from "next/head";
 import { NextPage } from "next";
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/router";
 
@@ -64,9 +65,14 @@ const ModsPage: NextPage<ModsPageProps> = ({}) => {
                   key={mod.id}
                   className="flex flex-row items-center justify-between p-2 mb-2 border border-coolGray-200"
                 >
-                  <p>
-                    {mod.title} <span>by: {mod.author.username}</span>
-                  </p>
+                  <div>
+                    <Link
+                      href={`/games/${router.query.gameSlug}/mods/${mod.id}`}
+                    >
+                      {mod.title}
+                    </Link>
+                    <p>by: {mod.author.username}</p>
+                  </div>
                   <div>
                     <span className="mr-2">Likes: {mod.likesCount}</span>
                     {!mod.isOwner && (
