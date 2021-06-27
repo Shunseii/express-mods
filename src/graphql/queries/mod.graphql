@@ -1,7 +1,7 @@
 query Mod($modId: Int!) {
   mod(id: $modId) {
     ...ModIDInfo
-    ...ModPreviewContentInfo
+    ...ModFullContentInfo
     ...ModDateInfo
     author {
       ...UserIDInfo
