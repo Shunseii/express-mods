@@ -11,9 +11,15 @@ import {
 } from "../../../../components/ActionButton";
 import Container from "../../../../components/Container";
 import Navbar from "../../../../components/Navbar";
-import { useModQuery } from "../../../../generated/graphql";
+import {
+  UpdateModMutationVariables,
+  useModQuery,
+  useUpdateModMutation,
+} from "../../../../generated/graphql";
 import LabeledFormField from "../../../../components/LabeledFormField";
 import { createUrqlClient } from "../../../../utils/createUrqlClient";
+import sleep from "../../../../utils/sleep";
+import { mapAPIErrors } from "../../../../utils/mapAPIError";
 
 interface ModPageProps {}
 
@@ -21,6 +27,7 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const router = useRouter();
   const modId = parseInt(router.query.gameId as string);
+  const [, updateMod] = useUpdateModMutation();
   const [{ data, fetching }] = useModQuery({ variables: { modId } });
 
   if (!fetching && !data) {
@@ -43,19 +50,35 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
         <div>
           {data.mod.isOwner && isEditingTitle ? (
             <Formik
-              initialValues={{ title: data.mod.title }}
+              initialValues={{
+                content: data.mod.content,
+                title: data.mod.title,
+              }}
               onSubmit={async (values, { setErrors }) => {
-                console.log("Submitting");
-                // await sleep(500);
-                // const response = await forgotPassword({
-                //   email: values.email,
-                // });
-                // const errors = mapAPIErrors(response.error?.graphQLErrors);
-                // if (errors) {
-                //   setErrors(errors.validation);
-                // } else {
-                //   setCompleted(true);
-                // }
+                await sleep(500);
+
+                const modVars: UpdateModMutationVariables = {
+                  modId: data.mod.id,
+                };
+
+                if (values.title !== data.mod.title) {
+                  modVars.title = values.title;
+                }
+
+                if (values.content !== data.mod.content) {
+                  modVars.content = values.content;
+                }
+
+                const response = await updateMod(modVars);
+                const errors = mapAPIErrors(response.error?.graphQLErrors);
+
+                console.log(response);
+
+                if (errors) {
+                  setErrors(errors.validation);
+                } else {
+                  setIsEditingTitle(false);
+                }
               }}
             >
               {({ isSubmitting }) => (
