@@ -1,0 +1,4 @@
+fragment ModLikeInfo on Mod {
+  likesCount
+  hasLiked
+}

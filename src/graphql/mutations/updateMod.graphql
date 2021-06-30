@@ -1,0 +1,7 @@
+mutation UpdateMod($modId: Int!, $title: String, $content: String) {
+  updateMod(options: { id: $modId, title: $title, content: $content }) {
+    ...ModIDInfo
+    ...ModFullContentInfo
+    ...ModDateInfo
+  }
+}
