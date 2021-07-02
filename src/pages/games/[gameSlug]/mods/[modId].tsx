@@ -4,6 +4,7 @@ import { withUrqlClient } from "next-urql";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { Formik, Form } from "formik";
+import ReactMarkdown from "react-markdown";
 
 import {
   PrimaryActionButton,
@@ -128,7 +129,7 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
           <div className="mt-12">
             {!isEditingContent && (
               <>
-                <p>{data.mod.content}</p>
+                <ReactMarkdown>{data.mod.content}</ReactMarkdown>
                 {data.mod.isOwner && (
                   <PrimaryActionButton
                     className="mt-4"
