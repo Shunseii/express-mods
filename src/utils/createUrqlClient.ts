@@ -4,6 +4,7 @@ import { dedupExchange, fetchExchange, gql, stringifyVariables } from "urql";
 
 import {
   ChangePasswordMutation,
+  DeleteModMutationVariables,
   LikeModMutationVariables,
   LoginMutation,
   LogoutMutation,
@@ -80,6 +81,12 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
         },
         updates: {
           Mutation: {
+            deleteMod(_result, args, cache, _info) {
+              cache.invalidate({
+                __typename: "Mod",
+                id: (args as DeleteModMutationVariables).id,
+              });
+            },
             likeMod: (_result, args, cache, info) => {
               const { modId } = args as LikeModMutationVariables;
               const data = cache.readFragment(
