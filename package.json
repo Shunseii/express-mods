@@ -33,6 +33,7 @@
     "@types/react": "^17.0.3",
     "autoprefixer": "^10.0.4",
     "postcss": "^8.3.5",
+    "stylelint": "^13.13.1",
     "stylelint-config-standard": "^21.0.0",
     "stylelint-scss": "^3.19.0",
     "tailwindcss": "^2.2.4",
