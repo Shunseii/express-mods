@@ -1,0 +1,3 @@
+mutation DeleteMod($id: Int!) {
+  deleteMod(id: $id)
+}
