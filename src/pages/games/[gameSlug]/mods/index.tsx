@@ -60,36 +60,38 @@ const ModsPage: NextPage<ModsPageProps> = ({}) => {
               />
             </div>
             {data?.mods?.mods &&
-              data.mods.mods.map((mod) => (
-                <div
-                  key={mod.id}
-                  className="flex flex-row items-center justify-between p-2 mb-2 border border-coolGray-200"
-                >
-                  <div>
-                    <Link
-                      href={`/games/${router.query.gameSlug}/mods/${mod.id}`}
-                    >
-                      {mod.title}
-                    </Link>
-                    <p>by: {mod.author.username}</p>
-                  </div>
-                  <div>
-                    <span className="mr-2">Likes: {mod.likesCount}</span>
-                    {!mod.isOwner && (
-                      <SecondaryActionButton
-                        onClick={async () => {
-                          const response = await likeMod({ modId: mod.id });
+              data.mods.mods.map((mod) =>
+                !mod ? null : (
+                  <div
+                    key={mod.id}
+                    className="flex flex-row items-center justify-between p-2 mb-2 border border-coolGray-200"
+                  >
+                    <div>
+                      <Link
+                        href={`/games/${router.query.gameSlug}/mods/${mod.id}`}
+                      >
+                        {mod.title}
+                      </Link>
+                      <p>by: {mod.author.username}</p>
+                    </div>
+                    <div>
+                      <span className="mr-2">Likes: {mod.likesCount}</span>
+                      {!mod.isOwner && (
+                        <SecondaryActionButton
+                          onClick={async () => {
+                            const response = await likeMod({ modId: mod.id });
 
-                          if (response.error) {
-                            alert("You have to be logged in to like mods.");
-                          }
-                        }}
-                        label={mod.hasLiked ? "Unlike" : "Like"}
-                      />
-                    )}
+                            if (response.error) {
+                              alert("You have to be logged in to like mods.");
+                            }
+                          }}
+                          label={mod.hasLiked ? "Unlike" : "Like"}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
           </>
         )}
         {data?.mods?.hasMore && (
