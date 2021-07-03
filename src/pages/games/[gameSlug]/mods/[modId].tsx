@@ -14,6 +14,7 @@ import Container from "../../../../components/Container";
 import Navbar from "../../../../components/Navbar";
 import {
   UpdateModMutationVariables,
+  useDeleteModMutation,
   useModQuery,
   useUpdateModMutation,
 } from "../../../../generated/graphql";
@@ -30,6 +31,8 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
 
   const router = useRouter();
   const modId = parseInt(router.query.modId as string);
+  const gameSlug = router.query.gameSlug as string;
+  const [, deleteMod] = useDeleteModMutation();
   const [, updateMod] = useUpdateModMutation();
   const [{ data, fetching }] = useModQuery({ variables: { modId } });
 
@@ -39,6 +42,10 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
 
   if (fetching) {
     return <div>Loading...</div>;
+  }
+
+  if (!fetching && !data.mod) {
+    return <div>That mod doesn't exist</div>;
   }
 
   return (
@@ -51,57 +58,75 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
       <Navbar />
       <Container>
         <div>
-          {data.mod.isOwner && isEditingTitle && (
-            <Formik
-              initialValues={{
-                title: data.mod.title,
-              }}
-              onSubmit={async (values, { setErrors }) => {
-                await sleep(500);
+          {data.mod.isOwner && (
+            <>
+              <SecondaryActionButton
+                label="Delete mod"
+                onClick={async () => {
+                  if (confirm("Do you want to delete this mod?")) {
+                    const response = await deleteMod({ id: data.mod.id });
 
-                const modVars: UpdateModMutationVariables = {
-                  modId: data.mod.id,
-                };
+                    if (response.data.deleteMod) {
+                      router.push(`/games/${gameSlug}/mods`);
+                    } else {
+                      alert("There was a problem deleting the mod.");
+                    }
+                  }
+                }}
+              />
+              {isEditingTitle && (
+                <Formik
+                  initialValues={{
+                    title: data.mod.title,
+                  }}
+                  onSubmit={async (values, { setErrors }) => {
+                    await sleep(500);
 
-                if (values.title !== data.mod.title) {
-                  modVars.title = values.title;
-                }
+                    const modVars: UpdateModMutationVariables = {
+                      modId: data.mod.id,
+                    };
 
-                const response = await updateMod(modVars);
-                const errors = mapAPIErrors(response.error?.graphQLErrors);
+                    if (values.title !== data.mod.title) {
+                      modVars.title = values.title;
+                    }
 
-                if (errors) {
-                  setErrors(errors.validation);
-                } else {
-                  setIsEditingTitle(false);
-                }
-              }}
-            >
-              {({ isSubmitting }) => (
-                <Form className="">
-                  <LabeledFormField
-                    className="mb-6"
-                    name="title"
-                    label="Title"
-                  />
-                  <div>
-                    <PrimaryActionButton
-                      isLoading={isSubmitting}
-                      className="mr-2 text-lg h-11"
-                      type="submit"
-                      label="Confirm"
-                    />
-                    <SecondaryActionButton
-                      className="text-lg h-11"
-                      label="Cancel"
-                      onClick={() => {
-                        setIsEditingTitle(false);
-                      }}
-                    />
-                  </div>
-                </Form>
+                    const response = await updateMod(modVars);
+                    const errors = mapAPIErrors(response.error?.graphQLErrors);
+
+                    if (errors) {
+                      setErrors(errors.validation);
+                    } else {
+                      setIsEditingTitle(false);
+                    }
+                  }}
+                >
+                  {({ isSubmitting }) => (
+                    <Form className="">
+                      <LabeledFormField
+                        className="mb-6"
+                        name="title"
+                        label="Title"
+                      />
+                      <div>
+                        <PrimaryActionButton
+                          isLoading={isSubmitting}
+                          className="mr-2 text-lg h-11"
+                          type="submit"
+                          label="Confirm"
+                        />
+                        <SecondaryActionButton
+                          className="text-lg h-11"
+                          label="Cancel"
+                          onClick={() => {
+                            setIsEditingTitle(false);
+                          }}
+                        />
+                      </div>
+                    </Form>
+                  )}
+                </Formik>
               )}
-            </Formik>
+            </>
           )}
 
           {!isEditingTitle && (
