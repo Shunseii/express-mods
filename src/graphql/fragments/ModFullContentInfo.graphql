@@ -1,7 +1,4 @@
 fragment ModFullContentInfo on Mod {
   content
-  likesCount
-  likes {
-    ...UserIDInfo
-  }
+  ...ModLikeInfo
 }
