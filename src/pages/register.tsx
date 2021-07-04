@@ -7,7 +7,7 @@ import { withUrqlClient } from "next-urql";
 
 import LabeledFormField from "../components/LabeledFormField";
 import { PrimaryActionButton } from "../components/ActionButton";
-import { useRegisterMutation } from "../generated/graphql";
+import { useMeQuery, useRegisterMutation } from "../generated/graphql";
 import { mapAPIErrors } from "../utils/mapAPIError";
 import sleep from "../utils/sleep";
 import { createUrqlClient } from "../utils/createUrqlClient";
@@ -21,6 +21,11 @@ const Register: NextPage<RegisterProps> = ({}) => {
   const router = useRouter();
   const [formError, setFormError] = useState("");
   const [, register] = useRegisterMutation();
+  const [{ data, fetching }] = useMeQuery();
+
+  if (!fetching && !!data.me) {
+    router.push("/");
+  }
 
   return (
     <>
