@@ -66,7 +66,7 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
                   if (confirm("Do you want to delete this mod?")) {
                     const response = await deleteMod({ id: data.mod.id });
 
-                    if (response.data.deleteMod) {
+                    if (response.data?.deleteMod) {
                       router.push(`/games/${gameSlug}/mods`);
                     } else {
                       alert("There was a problem deleting the mod.");
