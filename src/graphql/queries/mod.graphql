@@ -6,5 +6,8 @@ query Mod($modId: Int!) {
     author {
       ...UserIDInfo
     }
+    comments {
+      ...CommentInfo
+    }
   }
 }

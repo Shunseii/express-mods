@@ -1,0 +1,8 @@
+fragment CommentInfo on Comment {
+  id
+  content
+  modId
+  author {
+    ...UserIDInfo
+  }
+}
