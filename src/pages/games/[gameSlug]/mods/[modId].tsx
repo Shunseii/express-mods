@@ -221,6 +221,18 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
               </Formik>
             )}
           </div>
+
+          <hr className="my-8" />
+
+          <div>
+            <h3 className="text-2xl">Comments</h3>
+            {data.mod.comments?.map((comment) => (
+              <div key={comment.id}>
+                <p>{comment.author.username}</p>
+                <p>{comment.content}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </Container>
     </div>
