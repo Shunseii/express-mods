@@ -1,3 +1,4 @@
+import { devtoolsExchange } from "@urql/devtools";
 import { cacheExchange, Resolver } from "@urql/exchange-graphcache";
 import { SSRExchange } from "next-urql";
 import { dedupExchange, fetchExchange, gql, stringifyVariables } from "urql";
@@ -69,6 +70,7 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
         : undefined,
     },
     exchanges: [
+      devtoolsExchange,
       dedupExchange,
       cacheExchange({
         keys: {
@@ -152,11 +154,15 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
 
               const allFields = cache.inspectFields("Query");
               const fieldInfos = allFields.filter(
-                (info) => info.fieldName === "mods"
+                (info) => info.fieldName === "mods" || info.fieldName === "mod"
               );
 
               fieldInfos.forEach((fieldInfo) => {
-                cache.invalidate("Query", "mods", fieldInfo.arguments || {});
+                cache.invalidate(
+                  "Query",
+                  fieldInfo.fieldName,
+                  fieldInfo.arguments || {}
+                );
               });
             },
             logout: (_result, args, cache, info) => {
@@ -169,11 +175,15 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
 
               const allFields = cache.inspectFields("Query");
               const fieldInfos = allFields.filter(
-                (info) => info.fieldName === "mods"
+                (info) => info.fieldName === "mods" || info.fieldName === "mod"
               );
 
               fieldInfos.forEach((fieldInfo) => {
-                cache.invalidate("Query", "mods", fieldInfo.arguments || {});
+                cache.invalidate(
+                  "Query",
+                  fieldInfo.fieldName,
+                  fieldInfo.arguments || {}
+                );
               });
             },
             changePassword: (_result, args, cache, info) => {
@@ -214,11 +224,15 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
 
               const allFields = cache.inspectFields("Query");
               const fieldInfos = allFields.filter(
-                (info) => info.fieldName === "mods"
+                (info) => info.fieldName === "mods" || info.fieldName === "mod"
               );
 
               fieldInfos.forEach((fieldInfo) => {
-                cache.invalidate("Query", "mods", fieldInfo.arguments || {});
+                cache.invalidate(
+                  "Query",
+                  fieldInfo.fieldName,
+                  fieldInfo.arguments || {}
+                );
               });
             },
           },
