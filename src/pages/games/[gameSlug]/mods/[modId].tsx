@@ -14,6 +14,7 @@ import Container from "../../../../components/Container";
 import Navbar from "../../../../components/Navbar";
 import {
   UpdateModMutationVariables,
+  useCreateCommentMutation,
   useDeleteModMutation,
   useModQuery,
   useUpdateModMutation,
@@ -34,6 +35,7 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
   const gameSlug = router.query.gameSlug as string;
   const [, deleteMod] = useDeleteModMutation();
   const [, updateMod] = useUpdateModMutation();
+  const [, createComment] = useCreateCommentMutation();
   const [{ data, fetching }] = useModQuery({ variables: { modId } });
 
   if (!fetching && !data) {
@@ -232,6 +234,47 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
                 <p>{comment.content}</p>
               </div>
             ))}
+            <div className="mt-4">
+              <h4>Write a comment</h4>
+              <Formik
+                initialValues={{
+                  content: "",
+                }}
+                onSubmit={async (values, { setErrors }) => {
+                  await sleep(500);
+
+                  const response = await createComment({
+                    modId: data.mod.id,
+                    content: values.content,
+                  });
+                  const errors = mapAPIErrors(response.error?.graphQLErrors);
+
+                  if (errors) {
+                    setErrors(errors.validation);
+                  }
+                }}
+              >
+                {({ isSubmitting }) => (
+                  <Form className="">
+                    <LabeledFormField
+                      className="mb-6"
+                      name="content"
+                      placeholder="Write something"
+                      label="Content"
+                      type="textarea"
+                    />
+                    <div>
+                      <PrimaryActionButton
+                        isLoading={isSubmitting}
+                        className="mr-2 text-lg h-11"
+                        type="submit"
+                        label="Write a comment"
+                      />
+                    </div>
+                  </Form>
+                )}
+              </Formik>
+            </div>
           </div>
         </div>
       </Container>

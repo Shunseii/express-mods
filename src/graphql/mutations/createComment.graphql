@@ -1,0 +1,5 @@
+mutation CreateComment($content: String!, $modId: Int!) {
+  createComment(options: { content: $content, modId: $modId }) {
+    ...CommentInfo
+  }
+}
