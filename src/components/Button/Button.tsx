@@ -75,7 +75,7 @@ const Button: React.FC<ButtonProps> = ({
     const { href } = LinkButtonProps;
 
     return (
-      <Link href={href}>
+      <Link href={href} passHref>
         <span className={`${themeClassName} ${className}`}>{label}</span>
       </Link>
     );
