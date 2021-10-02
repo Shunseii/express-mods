@@ -6,7 +6,7 @@ export enum ErrorMessage {
 }
 
 interface ValidationError {
-  target?: object;
+  target?: Record<string, unknown>;
   property: string;
   value?: any;
   constraints?: {
@@ -30,7 +30,7 @@ const isValidationError = (error: GraphQLError): boolean => {
   return error.message.includes(ErrorMessage.VALIDATION_ERROR);
 };
 
-const isAuthorizationError = (error: GraphQLError): boolean => {
+export const isAuthorizationError = (error: GraphQLError): boolean => {
   return error.message.includes(ErrorMessage.AUTHORIZATION_ERROR);
 };
 
@@ -42,15 +42,14 @@ interface ErrorMap {
 }
 
 const mapValidationErrors = (error: GraphQLError): ErrorMap["validation"] => {
-  const {
-    validationErrors,
-  } = (error.extensions as GraphQLErrorExtension).exception;
-  let validationFields = {};
+  const { validationErrors } = (error.extensions as GraphQLErrorExtension)
+    .exception;
+  const validationFields = {};
 
   validationErrors.forEach((err) => {
     const { property, constraints } = err;
 
-    for (let key in constraints) {
+    for (const key in constraints) {
       validationFields[property] = constraints[key];
       break;
     }
@@ -60,7 +59,7 @@ const mapValidationErrors = (error: GraphQLError): ErrorMap["validation"] => {
 };
 
 export const mapAPIErrors = (errors: GraphQLError[] = []): ErrorMap => {
-  let errorsMap: ErrorMap = {
+  const errorsMap: ErrorMap = {
     validation: {},
     errors: [],
   };
