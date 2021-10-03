@@ -1,41 +1,56 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { NextPage } from "next";
-import { withUrqlClient } from "next-urql";
 import Head from "next/head";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { Formik, Form } from "formik";
 import ReactMarkdown from "react-markdown";
+import { withUrqlClient } from "next-urql";
 
 import {
   PrimaryActionButton,
   SecondaryActionButton,
-} from "../../../../components/ActionButton";
-import Container from "../../../../components/Container";
-import Navbar from "../../../../components/Navbar";
+} from "components/ActionButton";
+import Container from "components/Container";
+import Navbar from "components/Navbar";
 import {
   UpdateModMutationVariables,
   useCreateCommentMutation,
+  useDeleteCommentMutation,
   useDeleteModMutation,
   useModQuery,
+  useUpdateCommentMutation,
   useUpdateModMutation,
-} from "../../../../generated/graphql";
-import LabeledFormField from "../../../../components/LabeledFormField";
-import { createUrqlClient } from "../../../../utils/createUrqlClient";
-import sleep from "../../../../utils/sleep";
-import { mapAPIErrors } from "../../../../utils/mapAPIError";
+  useUploadImageMutation,
+} from "generated/graphql";
+import FormField from "components/FormField";
+import sleep from "utils/sleep";
+import { mapAPIErrors } from "utils/mapAPIError";
+import { renderMostRecentRelativeTime } from "utils/time";
+import { createUrqlClient } from "utils/createUrqlClient";
+import { allValidImageMimetypes } from "utils/checkFileMimetypes";
 
-interface ModPageProps {}
+const enum Tabs {
+  Description = "Description",
+  Images = "Images",
+  Files = "Files",
+}
 
-const ModPage: NextPage<ModPageProps> = ({}) => {
+const ModPage: NextPage = () => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingContent, setIsEditingContent] = useState(false);
+  const [commentsInEdit, setCommentsInEdit] = useState([]);
+  const [activeTab, setActiveTab] = useState<Tabs>(Tabs.Description);
 
   const router = useRouter();
-  const modId = parseInt(router.query.modId as string);
+  const modId = router.query.modId as string;
   const gameSlug = router.query.gameSlug as string;
   const [, deleteMod] = useDeleteModMutation();
   const [, updateMod] = useUpdateModMutation();
   const [, createComment] = useCreateCommentMutation();
+  const [, updateComment] = useUpdateCommentMutation();
+  const [, deleteComment] = useDeleteCommentMutation();
+  const [, uploadImage] = useUploadImageMutation();
   const [{ data, fetching }] = useModQuery({ variables: { modId } });
 
   if (!fetching && !data) {
@@ -47,7 +62,7 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
   }
 
   if (!fetching && !data.mod) {
-    return <div>That mod doesn't exist</div>;
+    return <div>That mod doesn&rsquo;t exist</div>;
   }
 
   return (
@@ -104,11 +119,7 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
                 >
                   {({ isSubmitting }) => (
                     <Form className="">
-                      <LabeledFormField
-                        className="mb-6"
-                        name="title"
-                        label="Title"
-                      />
+                      <FormField className="mb-6" name="title" />
                       <div>
                         <PrimaryActionButton
                           isLoading={isSubmitting}
@@ -153,75 +164,149 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
 
           <hr className="my-8" />
 
-          <div className="mt-12">
-            {!isEditingContent && (
-              <>
-                <ReactMarkdown>{data.mod.content}</ReactMarkdown>
-                {data.mod.isOwner && (
-                  <PrimaryActionButton
-                    className="mt-4"
-                    label="Edit description"
-                    onClick={() => {
-                      setIsEditingContent(true);
+          <div>
+            <div>
+              <button
+                className="inline mr-4"
+                onClick={() => setActiveTab(Tabs.Description)}
+              >
+                <h3
+                  className={`text-xl ${
+                    activeTab === Tabs.Description &&
+                    "font-medium border-b border-purple-500"
+                  }`}
+                >
+                  {Tabs.Description}
+                </h3>
+              </button>
+              <button
+                className="inline mr-4"
+                onClick={() => setActiveTab(Tabs.Images)}
+              >
+                <h3
+                  className={`text-xl ${
+                    activeTab === Tabs.Images &&
+                    "font-medium border-b border-purple-500"
+                  }`}
+                >
+                  {Tabs.Images}
+                </h3>
+              </button>
+              <button
+                className="inline"
+                onClick={() => setActiveTab(Tabs.Files)}
+              >
+                <h3
+                  className={`text-xl ${
+                    activeTab === Tabs.Files &&
+                    "font-medium border-b border-purple-500"
+                  }`}
+                >
+                  {Tabs.Files}
+                </h3>
+              </button>
+            </div>
+            <div className="mt-6">
+              {activeTab === Tabs.Description && (
+                <div>
+                  {!isEditingContent && (
+                    <>
+                      <ReactMarkdown>{data.mod.content}</ReactMarkdown>
+                      {data.mod.isOwner && (
+                        <PrimaryActionButton
+                          className="mt-4"
+                          label="Edit description"
+                          onClick={() => {
+                            setIsEditingContent(true);
+                          }}
+                        />
+                      )}
+                    </>
+                  )}
+
+                  {data.mod.isOwner && isEditingContent && (
+                    <Formik
+                      initialValues={{
+                        content: data.mod.content,
+                      }}
+                      onSubmit={async (values, { setErrors }) => {
+                        await sleep(500);
+
+                        const modVars: UpdateModMutationVariables = {
+                          modId: data.mod.id,
+                        };
+
+                        if (values.content !== data.mod.content) {
+                          modVars.content = values.content;
+                        }
+
+                        const response = await updateMod(modVars);
+                        const errors = mapAPIErrors(
+                          response.error?.graphQLErrors
+                        );
+
+                        if (errors) {
+                          setErrors(errors.validation);
+                        } else {
+                          setIsEditingContent(false);
+                        }
+                      }}
+                    >
+                      {({ isSubmitting }) => (
+                        <Form className="">
+                          <FormField
+                            className="mb-6"
+                            name="content"
+                            type="textarea"
+                          />
+                          <div>
+                            <PrimaryActionButton
+                              isLoading={isSubmitting}
+                              className="mr-2 text-lg h-11"
+                              type="submit"
+                              label="Confirm"
+                            />
+                            <SecondaryActionButton
+                              className="text-lg h-11"
+                              label="Cancel"
+                              onClick={() => {
+                                setIsEditingContent(false);
+                              }}
+                            />
+                          </div>
+                        </Form>
+                      )}
+                    </Formik>
+                  )}
+                </div>
+              )}
+              {activeTab === Tabs.Images && (
+                <div>
+                  <h1>Upload files here :)</h1>
+                  <input
+                    type="file"
+                    // multiple
+                    accept="image/jpeg,image/png"
+                    onChange={({ target: { files } }) => {
+                      const hasValidFiles = allValidImageMimetypes(files);
+
+                      if (hasValidFiles) {
+                        Array.from(files).forEach((file) => {
+                          uploadImage({ modId, imageFile: file });
+                        });
+                      } else {
+                        alert("Invalid file type selected >:(");
+                      }
                     }}
                   />
-                )}
-              </>
-            )}
-
-            {data.mod.isOwner && isEditingContent && (
-              <Formik
-                initialValues={{
-                  content: data.mod.content,
-                }}
-                onSubmit={async (values, { setErrors }) => {
-                  await sleep(500);
-
-                  const modVars: UpdateModMutationVariables = {
-                    modId: data.mod.id,
-                  };
-
-                  if (values.content !== data.mod.content) {
-                    modVars.content = values.content;
-                  }
-
-                  const response = await updateMod(modVars);
-                  const errors = mapAPIErrors(response.error?.graphQLErrors);
-
-                  if (errors) {
-                    setErrors(errors.validation);
-                  } else {
-                    setIsEditingContent(false);
-                  }
-                }}
-              >
-                {({ isSubmitting }) => (
-                  <Form className="">
-                    <LabeledFormField
-                      className="mb-6"
-                      name="content"
-                      label="Content"
-                      type="textarea"
-                    />
-                    <div>
-                      <PrimaryActionButton
-                        isLoading={isSubmitting}
-                        className="mr-2 text-lg h-11"
-                        type="submit"
-                        label="Confirm"
-                      />
-                      <SecondaryActionButton
-                        className="text-lg h-11"
-                        label="Cancel"
-                        onClick={() => {
-                          setIsEditingContent(false);
-                        }}
-                      />
-                    </div>
-                  </Form>
-                )}
-              </Formik>
-            )}
+                  <br />
+                  {data.mod.isOwner &&
+                    data.mod.images.map((imageUrl) => (
+                      <Image alt="mod image" key={data.mod.id} src={imageUrl} />
+                    ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <hr className="my-8" />
@@ -229,13 +314,105 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
           <div>
             <h3 className="text-2xl">Comments</h3>
             {data.mod.comments?.map((comment) => (
-              <div key={comment.id}>
-                <p>{comment.author.username}</p>
-                <p>{comment.content}</p>
+              <div className="mt-4" key={comment.id}>
+                <div className="flex flex-row items-baseline justify-between">
+                  <div className="flex flex-row items-baseline">
+                    <p className="text-lg font-medium">
+                      {comment.author.username}
+                    </p>
+                    <p className="ml-2 font-light">
+                      {renderMostRecentRelativeTime(
+                        comment.createdAt,
+                        comment.updatedAt
+                      )}
+                    </p>
+                  </div>
+                  {comment.isOwner && !commentsInEdit.includes(comment.id) && (
+                    <div>
+                      <PrimaryActionButton
+                        className="mr-2"
+                        label="Edit"
+                        onClick={() => {
+                          setCommentsInEdit([...commentsInEdit, comment.id]);
+                        }}
+                      />
+                      <SecondaryActionButton
+                        label="Delete"
+                        onClick={() => {
+                          deleteComment({ id: comment.id });
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+                {commentsInEdit.includes(comment.id) && comment.isOwner ? (
+                  <Formik
+                    initialValues={{
+                      content: comment.content,
+                    }}
+                    onSubmit={async (values, { setErrors }) => {
+                      if (values.content === comment.content) {
+                        setCommentsInEdit(
+                          commentsInEdit.filter(
+                            (commentIdInEdit) => commentIdInEdit !== comment.id
+                          )
+                        );
+                        return;
+                      }
+
+                      await sleep(500);
+
+                      const response = await updateComment({
+                        id: comment.id,
+                        content: values.content,
+                      });
+                      const errors = mapAPIErrors(
+                        response.error?.graphQLErrors
+                      );
+
+                      if (errors) {
+                        setErrors(errors.validation);
+                      } else {
+                        setCommentsInEdit(
+                          commentsInEdit.filter(
+                            (commentIdInEdit) => commentIdInEdit !== comment.id
+                          )
+                        );
+                      }
+                    }}
+                  >
+                    {({ isSubmitting }) => (
+                      <Form className="">
+                        <FormField className="mb-6" name="content" />
+                        <div>
+                          <PrimaryActionButton
+                            isLoading={isSubmitting}
+                            className="mr-2 text-lg h-11"
+                            type="submit"
+                            label="Confirm"
+                          />
+                          <SecondaryActionButton
+                            className="text-lg h-11"
+                            label="Cancel"
+                            onClick={() => {
+                              setCommentsInEdit(
+                                commentsInEdit.filter(
+                                  (commentIdInEdit) =>
+                                    commentIdInEdit !== comment.id
+                                )
+                              );
+                            }}
+                          />
+                        </div>
+                      </Form>
+                    )}
+                  </Formik>
+                ) : (
+                  <p className="">{comment.content}</p>
+                )}
               </div>
             ))}
             <div className="mt-4">
-              <h4>Write a comment</h4>
               <Formik
                 initialValues={{
                   content: "",
@@ -251,16 +428,20 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
 
                   if (errors) {
                     setErrors(errors.validation);
+                    if (errors.errors) {
+                      alert("You must be logged in to comment.");
+                    }
+                  } else {
+                    values.content = "";
                   }
                 }}
               >
                 {({ isSubmitting }) => (
                   <Form className="">
-                    <LabeledFormField
+                    <FormField
                       className="mb-6"
                       name="content"
-                      placeholder="Write something"
-                      label="Content"
+                      placeholder="Write something..."
                       type="textarea"
                     />
                     <div>
@@ -268,7 +449,7 @@ const ModPage: NextPage<ModPageProps> = ({}) => {
                         isLoading={isSubmitting}
                         className="mr-2 text-lg h-11"
                         type="submit"
-                        label="Write a comment"
+                        label="Comment"
                       />
                     </div>
                   </Form>

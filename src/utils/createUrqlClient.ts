@@ -1,10 +1,13 @@
 import { devtoolsExchange } from "@urql/devtools";
 import { cacheExchange, Resolver } from "@urql/exchange-graphcache";
+import { multipartFetchExchange } from "@urql/exchange-multipart-fetch";
 import { SSRExchange } from "next-urql";
-import { dedupExchange, fetchExchange, gql, stringifyVariables } from "urql";
+import { dedupExchange, gql, stringifyVariables } from "urql";
 
 import {
   ChangePasswordMutation,
+  CreateCommentMutationVariables,
+  DeleteCommentMutationVariables,
   DeleteModMutationVariables,
   LikeModMutationVariables,
   LoginMutation,
@@ -35,7 +38,7 @@ const cursorPagination = (): Resolver => {
 
     info.partial = !isInCache;
 
-    let results: string[] = [];
+    const results: string[] = [];
     let hasMore = true;
 
     fieldInfos.forEach((fieldInfo) => {
@@ -83,13 +86,25 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
         },
         updates: {
           Mutation: {
-            deleteMod(_result, args, cache, _info) {
+            createComment(_result, args, cache) {
+              cache.invalidate({
+                __typename: "Mod",
+                id: (args.options as CreateCommentMutationVariables).modId,
+              });
+            },
+            deleteMod(_result, args, cache) {
               cache.invalidate({
                 __typename: "Mod",
                 id: (args as DeleteModMutationVariables).id,
               });
             },
-            likeMod: (_result, args, cache, info) => {
+            deleteComment(_result, args, cache) {
+              cache.invalidate({
+                __typename: "Comment",
+                id: (args as DeleteCommentMutationVariables).id,
+              });
+            },
+            likeMod: (_result, args, cache) => {
               const { modId } = args as LikeModMutationVariables;
               const data = cache.readFragment(
                 gql`
@@ -124,7 +139,7 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
                 );
               }
             },
-            createMod: (_result, args, cache, info) => {
+            createMod: (_result, args, cache) => {
               const allFields = cache.inspectFields("Query");
               const fieldInfos = allFields.filter(
                 (info) => info.fieldName === "mods"
@@ -134,7 +149,7 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
                 cache.invalidate("Query", "mods", fieldInfo.arguments || {});
               });
             },
-            login: (_result, args, cache, info) => {
+            login: (_result, args, cache) => {
               betterUpdateQuery<LoginMutation, MeQuery>(
                 cache,
                 { query: MeDocument },
@@ -165,7 +180,7 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
                 );
               });
             },
-            logout: (_result, args, cache, info) => {
+            logout: (_result, args, cache) => {
               betterUpdateQuery<LogoutMutation, MeQuery>(
                 cache,
                 { query: MeDocument },
@@ -186,7 +201,7 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
                 );
               });
             },
-            changePassword: (_result, args, cache, info) => {
+            changePassword: (_result, args, cache) => {
               betterUpdateQuery<ChangePasswordMutation, MeQuery>(
                 cache,
                 { query: MeDocument },
@@ -204,7 +219,7 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
                 }
               );
             },
-            register: (_result, args, cache, info) => {
+            register: (_result, args, cache) => {
               betterUpdateQuery<RegisterMutation, MeQuery>(
                 cache,
                 { query: MeDocument },
@@ -239,7 +254,7 @@ export const createUrqlClient = (ssrExchange: SSRExchange, ctx: any) => {
         },
       }),
       ssrExchange,
-      fetchExchange,
+      multipartFetchExchange,
     ],
   };
 };
