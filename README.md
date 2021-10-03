@@ -12,12 +12,9 @@ The project allows users to register and login, post mods for different games, v
 
 ## In-Progress
 The core functionality that is still in development: 
-- ~~Individual mod display page~~
-- ~~Commenting on mod pages~~ (updating and deleting comments remains)
-- ~~Uploading files, cloud storage integration~~ (Not using cloud storage. See below)
-- Upload images/files and store them in Postgres (probably using bytea)
-- Perform virus check on uploaded files prior to storage (Ideally done in tandem with above)
+- ~~Uploading files, cloud storage integration with Backblaze b2~~ (e2e image upload done, file upload left)
+- Use ClamAV to virus scan uploaded mod files
 - Sorting and filtering options 
-- Categories/tags 
-- ~~Cloud database integration and hosting~~ (Not using a cloud database. See below)
-- Use Dokku on a (cheap) VPS to set up containers for Redis, Postgres, and the server 
+- Categories/tags
+- Use Dokku on a (cheap) VPS to set up containers for Redis, Postgres, BE server, and ClamAV 
+- Implement an actual design 😅
