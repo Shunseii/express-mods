@@ -10,7 +10,7 @@ interface NavbarLinkProps {
 
 const NavbarLink: React.FC<NavbarLinkProps> = ({ label, href, Icon }) => {
   return (
-    <Link href={href}>
+    <Link href={href} passHref>
       <li className="flex flex-row items-center mr-4 cursor-pointer">
         {Icon && <Icon className="mr-2 text-lg" />}
         <span className="text-lg">{label}</span>

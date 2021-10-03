@@ -7,14 +7,12 @@ import { Formik, Form } from "formik";
 import Navbar from "../components/Navbar";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import { PrimaryActionButton } from "../components/ActionButton";
-import LabeledFormField from "../components/LabeledFormField";
+import FormField from "../components/FormField";
 import { mapAPIErrors } from "../utils/mapAPIError";
 import sleep from "../utils/sleep";
 import { useForgotPasswordMutation } from "../generated/graphql";
 
-interface ForgotPasswordProps {}
-
-const ForgotPassword: NextPage<ForgotPasswordProps> = () => {
+const ForgotPassword: NextPage = () => {
   const [, forgotPassword] = useForgotPasswordMutation();
   const [completed, setCompleted] = useState(false);
 
@@ -57,7 +55,7 @@ const ForgotPassword: NextPage<ForgotPasswordProps> = () => {
               >
                 {({ isSubmitting }) => (
                   <Form className="flex flex-col">
-                    <LabeledFormField
+                    <FormField
                       className="mb-6"
                       name="email"
                       type="email"

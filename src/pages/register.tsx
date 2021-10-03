@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { Formik, Form } from "formik";
 import { withUrqlClient } from "next-urql";
 
-import LabeledFormField from "../components/LabeledFormField";
+import FormField from "../components/FormField";
 import { PrimaryActionButton } from "../components/ActionButton";
 import { useMeQuery, useRegisterMutation } from "../generated/graphql";
 import { mapAPIErrors } from "../utils/mapAPIError";
@@ -15,9 +15,7 @@ import Navbar from "../components/Navbar";
 import ErrorMessage from "../components/ErrorMessage";
 import Link from "../components/Link";
 
-interface RegisterProps {}
-
-const Register: NextPage<RegisterProps> = ({}) => {
+const Register: NextPage = () => {
   const router = useRouter();
   const [formError, setFormError] = useState("");
   const [, register] = useRegisterMutation();
@@ -63,18 +61,18 @@ const Register: NextPage<RegisterProps> = ({}) => {
             >
               {({ isSubmitting }) => (
                 <Form className="flex flex-col">
-                  <LabeledFormField
+                  <FormField
                     className="mb-6"
                     name="username"
                     label="Username"
                   />
-                  <LabeledFormField
+                  <FormField
                     className="mb-6"
                     name="email"
                     type="email"
                     label="Email"
                   />
-                  <LabeledFormField
+                  <FormField
                     className="mb-6"
                     name="password"
                     type="password"

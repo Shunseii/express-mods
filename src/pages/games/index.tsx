@@ -9,9 +9,7 @@ import Navbar from "../../components/Navbar";
 import { useGamesQuery } from "../../generated/graphql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 
-interface GamesPageProps {}
-
-const GamesPage: NextPage<GamesPageProps> = () => {
+const GamesPage: NextPage = () => {
   const [{ data, fetching }] = useGamesQuery();
 
   if (fetching) {

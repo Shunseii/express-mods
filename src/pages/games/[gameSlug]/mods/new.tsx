@@ -6,7 +6,7 @@ import Head from "next/head";
 import React, { useState } from "react";
 
 import { PrimaryActionButton } from "../../../../components/ActionButton";
-import LabeledFormField from "../../../../components/LabeledFormField";
+import FormField from "../../../../components/FormField";
 import Navbar from "../../../../components/Navbar";
 import { useCreateModMutation } from "../../../../generated/graphql";
 import { createUrqlClient } from "../../../../utils/createUrqlClient";
@@ -16,9 +16,7 @@ import ErrorMessage from "../../../../components/ErrorMessage";
 import useIsAuth from "../../../../hooks/useIsAuth";
 import Container from "../../../../components/Container";
 
-interface CreateModPageProps {}
-
-const CreateModPage: NextPage<CreateModPageProps> = () => {
+const CreateModPage: NextPage = () => {
   const [, createMod] = useCreateModMutation();
   const [formError, setFormError] = useState("");
   const router = useRouter();
@@ -59,13 +57,13 @@ const CreateModPage: NextPage<CreateModPageProps> = () => {
           >
             {({ isSubmitting }) => (
               <Form className="flex flex-col">
-                <LabeledFormField
+                <FormField
                   className="mb-6"
                   name="title"
                   label="Title (min. 4, max. 255 characters)"
                   placeholder="Title"
                 />
-                <LabeledFormField
+                <FormField
                   className="mb-6"
                   name="content"
                   type="textarea"

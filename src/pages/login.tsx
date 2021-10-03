@@ -5,7 +5,7 @@ import Head from "next/head";
 import { Formik, Form } from "formik";
 import { withUrqlClient } from "next-urql";
 
-import LabeledFormField from "../components/LabeledFormField";
+import FormField from "../components/FormField";
 import { PrimaryActionButton } from "../components/ActionButton";
 import { useLoginMutation } from "../generated/graphql";
 import { mapAPIErrors } from "../utils/mapAPIError";
@@ -14,9 +14,7 @@ import { createUrqlClient } from "../utils/createUrqlClient";
 import Navbar from "../components/Navbar";
 import Link from "../components/Link";
 
-interface LoginProps {}
-
-const Login: NextPage<LoginProps> = ({}) => {
+const Login: NextPage = () => {
   const router = useRouter();
   const [, login] = useLoginMutation();
 
@@ -57,12 +55,12 @@ const Login: NextPage<LoginProps> = ({}) => {
             >
               {({ isSubmitting }) => (
                 <Form className="flex flex-col">
-                  <LabeledFormField
+                  <FormField
                     className="mb-6"
                     name="username"
                     label="Username"
                   />
-                  <LabeledFormField
+                  <FormField
                     className="mb-6"
                     name="password"
                     type="password"
@@ -82,7 +80,7 @@ const Login: NextPage<LoginProps> = ({}) => {
             </Formik>
           </div>
           <p className="self-center text-sm font-extralight">
-            Don't have an account?
+            Don&rsquo;t have an account?
             <Link className="ml-1 text-sm font-medium" href="/register">
               Register
             </Link>

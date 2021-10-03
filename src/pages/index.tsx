@@ -1,3 +1,4 @@
+import React from "react";
 import { withUrqlClient } from "next-urql";
 import Head from "next/head";
 

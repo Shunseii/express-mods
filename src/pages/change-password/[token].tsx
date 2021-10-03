@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 
 import { PrimaryActionButton } from "../../components/ActionButton";
-import LabeledFormField from "../../components/LabeledFormField";
+import FormField from "../../components/FormField";
 import Navbar from "../../components/Navbar";
 import { useChangePasswordMutation } from "../../generated/graphql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
@@ -59,7 +59,7 @@ const ChangePassword: NextPage = () => {
             >
               {({ isSubmitting }) => (
                 <Form className="flex flex-col">
-                  <LabeledFormField
+                  <FormField
                     className="mb-6"
                     name="newPassword"
                     type="password"

@@ -6,7 +6,7 @@ export enum ErrorMessage {
 }
 
 interface ValidationError {
-  target?: Record<string, unknown>;
+  target?: Object;
   property: string;
   value?: any;
   constraints?: {

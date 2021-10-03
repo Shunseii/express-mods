@@ -4,16 +4,16 @@ import ErrorMessage from "./ErrorMessage";
 
 type InputType = "text" | "password" | "email" | "number" | "textarea";
 
-interface LabeledFormFieldProps {
+interface FormFieldProps {
   name: string;
-  label: string;
+  label?: string;
   type?: InputType;
   HelpLink?: React.FC;
   className?: string;
   placeholder?: string;
 }
 
-const LabeledFormField: React.FC<LabeledFormFieldProps> = (props) => {
+const FormField: React.FC<FormFieldProps> = (props) => {
   const [field, { error }] = useField(props);
   const { type = "text", label, placeholder, className, HelpLink } = props;
 
@@ -21,7 +21,7 @@ const LabeledFormField: React.FC<LabeledFormFieldProps> = (props) => {
     <div className={className}>
       <label>
         <div className="flex flex-row items-center justify-between">
-          <span className="">{label}</span>
+          {label && <span className="">{label}</span>}
           {HelpLink && (
             <span className="text-sm font-light">
               <HelpLink />
@@ -54,4 +54,4 @@ const LabeledFormField: React.FC<LabeledFormFieldProps> = (props) => {
   );
 };
 
-export default LabeledFormField;
+export default FormField;

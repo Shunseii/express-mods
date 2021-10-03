@@ -13,19 +13,22 @@ import { SecondaryActionButton } from "./ActionButton";
 import isServer from "../utils/isServer";
 import LoadingSpinner from "./LoadingSpinner";
 
-interface NavbarProps {}
-
-const Navbar: React.FC<NavbarProps> = ({}) => {
-  const [{ data, fetching: isFetchingMe }] = useMeQuery({ pause: isServer() });
+const Navbar: React.FC = () => {
+  const [{ data }] = useMeQuery({ pause: isServer() });
   const [{ fetching: isLoggingOut }, logout] = useLogoutMutation();
   const router = useRouter();
 
   return (
     <nav className="flex flex-row items-center justify-between py-8 mx-96">
       <div className="flex flex-row items-center">
-        <Link href="/">
+        <Link href="/" passHref>
           <div className="flex flex-row items-center pr-6 border-r border-gray-400 cursor-pointer">
-            <Image src={"/files-circle.svg"} width={40} height={40} />
+            <Image
+              src={"/files-circle.svg"}
+              width={40}
+              height={40}
+              alt="circle logo"
+            />
             <p className="ml-3 text-xl font-medium">Express Mods</p>
           </div>
         </Link>
@@ -62,7 +65,6 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
               isLoading={isLoggingOut}
               onClick={async () => {
                 logout();
-                // router.push("/login");
               }}
             />
           </>

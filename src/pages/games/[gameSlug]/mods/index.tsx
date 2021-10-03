@@ -1,3 +1,4 @@
+import React from "react";
 import { withUrqlClient } from "next-urql";
 import Head from "next/head";
 import { NextPage } from "next";
@@ -16,9 +17,7 @@ import Container from "../../../../components/Container";
 import { SecondaryActionButton } from "../../../../components/ActionButton";
 import { PrimaryLinkButton } from "../../../../components/LinkButton";
 
-interface ModsPageProps {}
-
-const ModsPage: NextPage<ModsPageProps> = ({}) => {
+const ModsPage: NextPage = () => {
   const router = useRouter();
   const [variables, setVariables] = useState({
     limit: 10,
