@@ -1,0 +1,4 @@
+fragment CommentDateInfo on Comment {
+  createdAt
+  updatedAt
+}

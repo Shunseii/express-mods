@@ -2,6 +2,8 @@ fragment CommentInfo on Comment {
   id
   content
   modId
+  isOwner
+  ...CommentDateInfo
   author {
     ...UserIDInfo
   }

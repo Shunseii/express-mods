@@ -1,4 +1,5 @@
 fragment ModFullContentInfo on Mod {
   content
+  images
   ...ModLikeInfo
 }

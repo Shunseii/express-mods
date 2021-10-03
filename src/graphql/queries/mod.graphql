@@ -1,4 +1,4 @@
-query Mod($modId: Int!) {
+query Mod($modId: String!) {
   mod(id: $modId) {
     ...ModIDInfo
     ...ModFullContentInfo

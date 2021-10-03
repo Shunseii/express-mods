@@ -1,4 +1,4 @@
-mutation UpdateMod($modId: Int!, $title: String, $content: String) {
+mutation UpdateMod($modId: String!, $title: String, $content: String) {
   updateMod(options: { id: $modId, title: $title, content: $content }) {
     ...ModIDInfo
     ...ModFullContentInfo

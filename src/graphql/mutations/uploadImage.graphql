@@ -1,0 +1,3 @@
+mutation UploadImage($modId: String!, $imageFile: Upload!) {
+  uploadImage(options: { modId: $modId, imageFile: $imageFile })
+}
